@@ -16,11 +16,16 @@ public class GhostController : MonoBehaviour
     public LayerMask GroundLayer;
     //animation
     public Animator anim;
+    public int now_sceneid;
 
     // Start is called before the first frame update
     void Start()
     {
-        //DontDestroyOnLoad(tf);
+        DontDestroyOnLoad(tf);
+        SceneManager.activeSceneChanged += SceneManager_activeSceneChanged;
+        now_sceneid = SceneManager.GetActiveScene().buildIndex;
+        if (now_sceneid == 0) SceneManager.LoadScene("Scene_1");
+
         rb = GetComponent<Rigidbody2D>();
         tf = GetComponent<Transform>();
         istouchground = true;
@@ -97,5 +102,24 @@ public class GhostController : MonoBehaviour
 
             SceneManager.LoadScene("Scene_1");
         }
+    }
+    private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
+    {
+        if (now_sceneid == 0 && arg1.name == "Scene_1")
+        {
+            tf.position = new Vector3(0f, 0f, 0f);
+        }
+        else if (now_sceneid == 1 && arg1.name == "Scene_2")
+        {
+            Debug.Log("change12");
+            tf.position = new Vector3(-5.5f, -1.5f, 0f);
+        }
+        else if (now_sceneid == 2 && arg1.name == "Scene_1")
+        {
+            tf.position = new Vector3(14.5f, -0.64f, 0f);
+        }
+        now_sceneid = SceneManager.GetActiveScene().buildIndex;
+        Debug.Log("change");
+
     }
 }

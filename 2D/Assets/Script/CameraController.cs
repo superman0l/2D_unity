@@ -6,12 +6,21 @@ public class CameraController : MonoBehaviour
 {
     public Transform tf;
     public Transform playertransform;
-    public double limit_l, limit_r, limit_g, limit_b;
+    public float limit_l, limit_r, limit_g, limit_b;
     public float someground;
     public float init_x, init_y;
     // Start is called before the first frame update
     void Start()
     {
+        playertransform= GameObject.Find("ghost").GetComponent<Transform>();
+        if (playertransform.position.x < limit_l)
+            init_x = limit_l;
+        else if (playertransform.position.x > limit_r)
+            init_x = limit_r;
+        if (playertransform.position.y < limit_b - someground)
+            init_y = limit_b;
+        else if (playertransform.position.y > limit_g - someground)
+            init_y = limit_g;
         tf.position = new Vector3(init_x, init_y, tf.position.z);
     }
 

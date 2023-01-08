@@ -112,7 +112,7 @@ public class GhostController : MonoBehaviour
         else if (now_sceneid == 1 && arg1.name == "Scene_2")
         {
             Debug.Log("change12");
-            tf.position = new Vector3(-5.5f, -1.5f, 0f);
+            tf.position = new Vector3(-8f, -1.5f, 0f);
         }
         else if (now_sceneid == 2 && arg1.name == "Scene_1")
         {

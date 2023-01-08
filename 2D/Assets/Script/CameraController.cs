@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playertransform= GameObject.Find("ghost").GetComponent<Transform>();
+        playertransform = GameObject.Find("ghost").GetComponent<Transform>();
         if (playertransform.position.x < limit_l)
             init_x = limit_l;
         else if (playertransform.position.x > limit_r)

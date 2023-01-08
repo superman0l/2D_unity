@@ -20,6 +20,7 @@ public class GhostController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //DontDestroyOnLoad(tf);
         rb = GetComponent<Rigidbody2D>();
         tf = GetComponent<Transform>();
         istouchground = true;
@@ -90,6 +91,11 @@ public class GhostController : MonoBehaviour
         {
 
             SceneManager.LoadScene("Scene_2");
+        }
+        if (collision.tag == "leftentertag")
+        {
+
+            SceneManager.LoadScene("Scene_1");
         }
     }
 }

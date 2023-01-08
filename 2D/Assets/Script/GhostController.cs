@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GhostController : MonoBehaviour
 {
@@ -81,6 +82,14 @@ public class GhostController : MonoBehaviour
             anim.SetBool("floattofall", true);
             anim.SetBool("falltofloat", false);
             anim.SetBool("floattojump", false);
+        }
+    }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.tag == "rightentertag")
+        {
+
+            SceneManager.LoadScene("Scene_2");
         }
     }
 }

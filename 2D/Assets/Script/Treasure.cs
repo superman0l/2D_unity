@@ -8,17 +8,20 @@ public class Treasure : MonoBehaviour
     public Transform tf;
     public GameObject EUI;
     public GameObject dashtip;
-    public bool opened = false;
+    public static bool opened = false;
     public GameObject dis;
     // Start is called before the first frame update
     void Start()
     {
+        if (GhostController.CanDash)
+            dis.SetActive(false);
     }
 
     // Update is called once per frame
     void Update()
     {
         CheckKey();
+
         //if (opened) dis.SetActive(false);
     }
     public void AnimationAct1()
@@ -54,6 +57,7 @@ public class Treasure : MonoBehaviour
         else if(opened && Input.anyKeyDown)
         {
             dashtip.SetActive(false);
+            GhostController.CanDash = true;
         }
     }
 }

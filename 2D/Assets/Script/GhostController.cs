@@ -16,8 +16,20 @@ public class GhostController : MonoBehaviour
     public LayerMask GroundLayer;
     //animation
     public Animator anim;
+    //record scene id
     public int now_sceneid;
-
+    //capability_dash
+    public static bool CanDash = false;
+    public float dashspeed;
+    public float dashtime;
+    bool isdashing;
+    float startdashtime;
+    public GameObject shadow;
+    public int shadownum;
+    float shadowtime;
+    //left and right wall check
+    public bool withwall;
+    public Transform wallcheck;
     // Start is called before the first frame update
     void Start()
     {
@@ -29,17 +41,27 @@ public class GhostController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         tf = GetComponent<Transform>();
         istouchground = true;
+
+        shadowtime = dashtime;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        HorizontalMove();
-        Jump();
-        AirStateChange();
+        if (!isdashing)
+        {
+            HorizontalMove();
+            Jump();
+            AirStateChange();
+            if (CanDash) Dash();
+        }
+        else
+        {
+            Dashing();
+        }
     }
     void HorizontalMove() 
     {
+        CheckWall();
         float direction = Input.GetAxis("Horizontal");
         if (direction < 0)
         {
@@ -49,7 +71,8 @@ public class GhostController : MonoBehaviour
         {
             tf.eulerAngles = new Vector3(tf.rotation.x, 0, tf.rotation.z);
         }
-        rb.velocity = new Vector2(direction * speed, rb.velocity.y);
+        if (!withwall)
+            rb.velocity = new Vector2(direction * speed, rb.velocity.y);
     }
     void Jump() 
     {
@@ -60,13 +83,17 @@ public class GhostController : MonoBehaviour
             AirStateChange();
         }
     }
+    void CheckWall()
+    {
+        withwall = Physics2D.Linecast(transform.position, wallcheck.position, GroundLayer);
+    }
     void CheckOnGround() {
         for (int i = 0; i < 3; i++) {
             istouchground = Physics2D.Linecast(transform.position, GroundChecks[i].position, GroundLayer);
             if (istouchground) return;
         }
     }
-    void AirStateChange()
+    void AirStateChange()//change ghost's animation
     {
         if (istouchground)
         {
@@ -103,7 +130,7 @@ public class GhostController : MonoBehaviour
             SceneManager.LoadScene("Scene_1");
         }
     }
-    private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)
+    private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)//change scenes event
     {
         if (now_sceneid == 0 && arg1.name == "Scene_1")
         {
@@ -111,7 +138,6 @@ public class GhostController : MonoBehaviour
         }
         else if (now_sceneid == 1 && arg1.name == "Scene_2")
         {
-            Debug.Log("change12");
             tf.position = new Vector3(-8f, -1.5f, 0f);
         }
         else if (now_sceneid == 2 && arg1.name == "Scene_1")
@@ -119,7 +145,34 @@ public class GhostController : MonoBehaviour
             tf.position = new Vector3(14.5f, -0.64f, 0f);
         }
         now_sceneid = SceneManager.GetActiveScene().buildIndex;
-        Debug.Log("change");
-
+    }
+    void Dash() {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            startdashtime = dashtime;
+            isdashing = true;
+        }
+    }
+    void Dashing()
+    {
+        startdashtime -= Time.deltaTime;
+        if(startdashtime < 0)
+        {
+            isdashing = false;
+            startdashtime = dashtime;
+            shadowtime = dashtime;
+        }
+        else
+        {
+            rb.velocity = tf.right * dashspeed;
+            if (startdashtime < shadowtime)
+            {
+                shadowtime -= dashtime / shadownum;
+                if (Input.GetAxis("Horizontal") < 0)
+                    Instantiate(shadow, tf.position, new Quaternion(0, 180, 0, 0));
+                else
+                    Instantiate(shadow, tf.position, new Quaternion(0, 0, 0, 0));
+            }
+        }
     }
 }

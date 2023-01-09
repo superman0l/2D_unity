@@ -7,6 +7,7 @@ TagManager:
   - rightentertag
   - leftentertag
   - Global
+  - DashBox
   layers:
   - Default
   - TransparentFX

@@ -9,7 +9,8 @@ public class GhostController : MonoBehaviour
     public Transform tf;
     public Rigidbody2D rb;
     //speed for horizontal move and jump
-    public float speed=5f;
+    public float normalspeed = 5f;
+    float speed;
     //grounded check
     public bool istouchground;
     public Transform[] GroundChecks = new Transform[3];
@@ -27,9 +28,19 @@ public class GhostController : MonoBehaviour
     public GameObject shadow;
     public int shadownum;
     float shadowtime;
-    //left and right wall check
+    //wall check
     public bool withwall;
     public Transform wallcheck;
+    //hurt
+    bool ishurt = false;
+    public float hurttime;
+    public float backspeed;
+    float counthurttime;
+    //afterhurt
+    bool isafterhurt = false;
+    public float afterhurttime;
+    public float afterhurtspeed;
+    float countahtime;
     // Start is called before the first frame update
     void Start()
     {
@@ -43,20 +54,34 @@ public class GhostController : MonoBehaviour
         istouchground = true;
 
         shadowtime = dashtime;
+        countahtime = afterhurttime;
     }
 
     void Update()
     {
-        if (!isdashing)
+        if (!isafterhurt)
+        {
+            speed = normalspeed;
+        }
+        else
+        {
+            afterhurt();
+        }
+
+        if (isdashing)
+        {
+            Dashing();
+        }
+        else if (ishurt)
+        {
+            Hurt();
+        }
+        else
         {
             HorizontalMove();
             Jump();
             AirStateChange();
             if (CanDash) Dash();
-        }
-        else
-        {
-            Dashing();
         }
     }
     void HorizontalMove() 
@@ -129,6 +154,11 @@ public class GhostController : MonoBehaviour
 
             SceneManager.LoadScene("Scene_1");
         }
+        if (collision.tag == "Enemy")
+        {
+            ishurt = true;
+            counthurttime = hurttime;
+        }
     }
     private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)//change scenes event
     {
@@ -173,6 +203,40 @@ public class GhostController : MonoBehaviour
                 else
                     Instantiate(shadow, tf.position, new Quaternion(0, 0, 0, 0));
             }
+            ishurt = false;
+        }
+    }
+    void Hurt()
+    {
+        counthurttime -= Time.deltaTime;
+        if (counthurttime < 0)
+        {
+            ishurt = false;
+            counthurttime = hurttime;
+            anim.SetBool("hurtrecover", true);
+            anim.SetBool("gethurt", false);
+            isafterhurt = true;
+        }
+        else
+        {
+            rb.velocity = tf.right * dashspeed * -1;
+            anim.SetBool("gethurt", true);
+            anim.SetBool("hurtrecover", false);
+        }
+    }
+    void afterhurt()
+    {
+        Debug.Log("ah");
+        countahtime -= Time.deltaTime;
+        if (countahtime < 0)
+        {
+            isafterhurt = false;
+            speed = normalspeed;
+            countahtime = afterhurttime;
+        }
+        else
+        {
+            speed = afterhurtspeed;
         }
     }
 }

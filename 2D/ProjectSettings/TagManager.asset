@@ -8,6 +8,7 @@ TagManager:
   - leftentertag
   - Global
   - DashBox
+  - Enemy
   layers:
   - Default
   - TransparentFX

@@ -5,13 +5,13 @@ using UnityEngine;
 public class PressEUI : MonoBehaviour
 {
     public GameObject tt;
-    public float counttime =  0f;
-    public Animator anim;
+    float counttime =  0f;
+    //public Animator anim;
     // Start is called before the first frame update
     void Start()
     {
         tt = GameObject.Find("Text");
-        anim = GameObject.Find("Treasure_Dash").GetComponent<Animator>(); ;
+        //anim = GameObject.Find("Treasure_Dash").GetComponent<Animator>(); ;
     }
 
     // Update is called once per frame

@@ -9,6 +9,7 @@ TagManager:
   - Global
   - DashBox
   - Enemy
+  - rightenter2
   layers:
   - Default
   - TransparentFX

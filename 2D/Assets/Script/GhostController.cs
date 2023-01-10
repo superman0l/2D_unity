@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class GhostController : MonoBehaviour
@@ -20,6 +21,7 @@ public class GhostController : MonoBehaviour
     //record scene id
     public int now_sceneid;
     //capability_dash
+    public int dashtimes;
     public static bool CanDash = false;
     public float dashspeed;
     public float dashtime;
@@ -41,6 +43,12 @@ public class GhostController : MonoBehaviour
     public float afterhurttime;
     public float afterhurtspeed;
     float countahtime;
+    //healthy bar
+    public int hp = 5;
+    public Image HP;
+    //
+    public GameObject dieui;
+    public static bool restart = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -59,6 +67,7 @@ public class GhostController : MonoBehaviour
 
     void Update()
     {
+        HP.fillAmount = (float)hp / 5;
         if (!isafterhurt)
         {
             speed = normalspeed;
@@ -76,12 +85,22 @@ public class GhostController : MonoBehaviour
         {
             Hurt();
         }
+        else if (hp <= 0)
+        {
+            rb.velocity = new Vector3(0, 0, 0);
+            restart = false;
+            anim.SetBool("restart", false);
+            anim.SetBool("isdie", true);
+        }
         else
         {
             HorizontalMove();
             Jump();
             AirStateChange();
-            if (CanDash) Dash();
+            if (CanDash && dashtimes > 0)
+            {
+                Dash();
+            }
         }
     }
     void HorizontalMove() 
@@ -115,7 +134,11 @@ public class GhostController : MonoBehaviour
     void CheckOnGround() {
         for (int i = 0; i < 3; i++) {
             istouchground = Physics2D.Linecast(transform.position, GroundChecks[i].position, GroundLayer);
-            if (istouchground) return;
+            if (istouchground)
+            {
+                dashtimes = 1;
+                return;
+            }
         }
     }
     void AirStateChange()//change ghost's animation
@@ -156,29 +179,51 @@ public class GhostController : MonoBehaviour
         }
         if (collision.tag == "Enemy")
         {
-            ishurt = true;
-            counthurttime = hurttime;
+            if (!isdashing)
+            {
+                hp--;
+                ishurt = true;
+                counthurttime = hurttime;
+            }
+        }
+        if (collision.tag == "rightenter2")
+        {
+            SceneManager.LoadScene("Scene_3");
         }
     }
     private void SceneManager_activeSceneChanged(Scene arg0, Scene arg1)//change scenes event
     {
-        if (now_sceneid == 0 && arg1.name == "Scene_1")
+        if(arg1.name == "Scene_1")
         {
-            tf.position = new Vector3(0f, 0f, 0f);
+            if (restart == true)
+            {
+                anim.SetBool("restart", true);
+                hp = 5;
+                anim.SetBool("isdie", false);
+                restart = false;
+                tf.position = new Vector3(0f, 0f, 0f);
+            }
+            else if (now_sceneid == 0)
+                tf.position = new Vector3(0f, 0f, 0f);
+            else if (now_sceneid == 2)
+                tf.position = new Vector3(14.5f, -0.64f, 0f);
         }
-        else if (now_sceneid == 1 && arg1.name == "Scene_2")
+        else if(arg1.name == "Scene_2")
         {
-            tf.position = new Vector3(-8f, -1.5f, 0f);
+            if (now_sceneid == 1)
+                tf.position = new Vector3(-8f, -1.5f, 0f);
         }
-        else if (now_sceneid == 2 && arg1.name == "Scene_1")
+        else if (arg1.name == "Scene_3")
         {
-            tf.position = new Vector3(14.5f, -0.64f, 0f);
+            if (now_sceneid == 2)
+                tf.position = new Vector3(23f, 2f, 0f);
         }
         now_sceneid = SceneManager.GetActiveScene().buildIndex;
     }
     void Dash() {
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
+            if (!istouchground) dashtimes--;
             startdashtime = dashtime;
             isdashing = true;
         }
@@ -238,5 +283,10 @@ public class GhostController : MonoBehaviour
         {
             speed = afterhurtspeed;
         }
+    }
+    void die()
+    {
+        anim.SetBool("isdie", false);
+        dieui.SetActive(true);
     }
 }

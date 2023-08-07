@@ -1,3 +1,9 @@
+很烂的平台跳跃demo
+unity入门练手
+演示视频
+https://www.bilibili.com/video/BV1WD4y1p7ee
+
+
 # proj2D
 1/8_1:26
 人物动画完成 scene1场景待完善 摄像机功能完成
